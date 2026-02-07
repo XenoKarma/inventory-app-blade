@@ -7,4 +7,18 @@ use Illuminate\Database\Eloquent\Model;
 class StockLog extends Model
 {
     //
+    protected $fillable = [
+        'product_id',
+        'type',
+        'qty_change',
+        'stock_before',
+        'stock_after',
+        'reason',
+        'user_id'
+    ];
+
+    public function product()
+    {
+        return $this->belongsTo(Product::class);
+    }
 }
