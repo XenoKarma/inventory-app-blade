@@ -3,9 +3,15 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Models\Scopes\NotArchivedScope;
+
 
 class Product extends Model
 {
+    protected static function booted()
+    {
+        static::addGlobalScope(new NotArchivedScope);
+    }
     //
     protected $fillable = [
         'name',
@@ -26,4 +32,5 @@ class Product extends Model
     {
         return $this->hasMany(StockLog::class);
     }
+
 }

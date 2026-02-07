@@ -1,44 +1,80 @@
-<x-app-layout>
-    <x-slot name="header">
+@extends('layouts.app')
+
+@section('title', 'Edit Kategori')
+
+@section('content')
+
+<div class="max-w-xl space-y-6">
+
+    {{-- Header --}}
+    <div>
         <h2 class="font-semibold text-xl text-gray-800">
             Edit Kategori
         </h2>
-    </x-slot>
+        <p class="text-sm text-gray-500">
+            Perbarui data kategori produk
+        </p>
+    </div>
 
-    <div class="p-6 max-w-xl">
+    {{-- Card Form --}}
+    <div class="bg-white p-6 rounded-xl shadow">
 
         <form method="POST"
-              action="{{ route('categories.update',$category->id) }}">
+              action="{{ route('categories.update',$category->id) }}"
+              class="space-y-5">
             @csrf
             @method('PUT')
 
-            <div class="mb-4">
-                <label class="block">Nama</label>
+            {{-- Nama --}}
+            <div>
+                <label class="block mb-1 font-medium">
+                    Nama
+                </label>
+
                 <input type="text"
                        name="name"
-                       class="border rounded w-full p-2"
+                       class="border rounded-lg w-full p-2
+                              focus:ring-2 focus:ring-gray-900 focus:outline-none"
                        value="{{ old('name',$category->name) }}">
+
                 @error('name')
-                    <div class="text-red-600">{{ $message }}</div>
+                    <div class="text-red-600 text-sm mt-1">
+                        {{ $message }}
+                    </div>
                 @enderror
             </div>
 
-            <div class="mb-4">
-                <label class="block">Deskripsi</label>
+            {{-- Deskripsi --}}
+            <div>
+                <label class="block mb-1 font-medium">
+                    Deskripsi
+                </label>
+
                 <textarea name="description"
-                          class="border rounded w-full p-2">{{ old('description',$category->description) }}</textarea>
+                          rows="4"
+                          class="border rounded-lg w-full p-2
+                                 focus:ring-2 focus:ring-gray-900 focus:outline-none">{{ old('description',$category->description) }}</textarea>
             </div>
 
-            <button class="bg-blue-600 text-white px-4 py-2 rounded">
-                Update
-            </button>
+            {{-- Actions --}}
+            <div class="flex items-center gap-3 pt-4">
 
-            <a href="{{ route('categories.index') }}"
-               class="ml-2 text-gray-600">
-               Batal
-            </a>
+                <button class="bg-blue-600 text-white px-5 py-2 rounded-lg
+                               hover:bg-blue-700 transition">
+                    Update
+                </button>
+
+                <a href="{{ route('categories.index') }}"
+                   class="text-gray-600 hover:text-black">
+                   Batal
+                </a>
+
+            </div>
 
         </form>
 
     </div>
-</x-app-layout>
+
+</div>
+
+@endsection

@@ -3,6 +3,8 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Models\User;
+use App\Models\Product;
 
 class StockLog extends Model
 {
@@ -20,5 +22,9 @@ class StockLog extends Model
     public function product()
     {
         return $this->belongsTo(Product::class);
+    }
+    public function user()
+    {
+        return $this->belongsTo(User::class);
     }
 }

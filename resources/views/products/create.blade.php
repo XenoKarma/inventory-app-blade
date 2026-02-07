@@ -1,36 +1,60 @@
-<x-app-layout>
-    <x-slot name="header">
+@extends('layouts.app')
+
+@section('title', 'Tambah Product')
+
+@section('content')
+
+<div class="max-w-xl space-y-6">
+
+    {{-- Header --}}
+    <div>
         <h2 class="font-semibold text-xl text-gray-800">
             Tambah Product
         </h2>
-    </x-slot>
+        <p class="text-sm text-gray-500">
+            Tambahkan data produk baru ke inventory
+        </p>
+    </div>
 
-    <div class="p-6 max-w-xl">
+    {{-- Card Form --}}
+    <div class="bg-white p-6 rounded-xl shadow">
 
-        <form method="POST" action="{{ route('products.store') }}">
+        <form method="POST" action="{{ route('products.store') }}" class="space-y-5">
             @csrf
 
-            <div class="mb-4">
-                <label>Nama</label>
+            {{-- Nama --}}
+            <div>
+                <label class="block mb-1 font-medium">
+                    Nama
+                </label>
                 <input type="text" name="name"
-                       class="border rounded w-full p-2"
+                       class="border rounded-lg w-full p-2 focus:ring-2 focus:ring-gray-900 focus:outline-none"
                        value="{{ old('name') }}">
+
                 @error('name')
-                    <div class="text-red-600">{{ $message }}</div>
+                    <div class="text-red-600 text-sm mt-1">
+                        {{ $message }}
+                    </div>
                 @enderror
             </div>
 
-            <div class="mb-4">
-                <label>SKU (boleh kosong → auto generate)</label>
+            {{-- SKU --}}
+            <div>
+                <label class="block mb-1 font-medium">
+                    SKU (boleh kosong → auto generate)
+                </label>
                 <input type="text" name="sku"
-                       class="border rounded w-full p-2"
+                       class="border rounded-lg w-full p-2 focus:ring-2 focus:ring-gray-900 focus:outline-none"
                        value="{{ old('sku') }}">
             </div>
 
-            <div class="mb-4">
-                <label>Kategori</label>
+            {{-- Kategori --}}
+            <div>
+                <label class="block mb-1 font-medium">
+                    Kategori
+                </label>
                 <select name="product_category_id"
-                        class="border rounded w-full p-2">
+                        class="border rounded-lg w-full p-2 focus:ring-2 focus:ring-gray-900 focus:outline-none">
                     <option value="">-- pilih --</option>
                     @foreach($categories as $c)
                         <option value="{{ $c->id }}">
@@ -40,37 +64,55 @@
                 </select>
             </div>
 
-            <div class="mb-4">
-                <label>Harga</label>
+            {{-- Harga --}}
+            <div>
+                <label class="block mb-1 font-medium">
+                    Harga
+                </label>
                 <input type="number" name="price"
-                       class="border rounded w-full p-2"
+                       class="border rounded-lg w-full p-2 focus:ring-2 focus:ring-gray-900 focus:outline-none"
                        value="{{ old('price') }}">
             </div>
 
-            <div class="mb-4">
-                <label>Stok Awal</label>
+            {{-- Stok Awal --}}
+            <div>
+                <label class="block mb-1 font-medium">
+                    Stok Awal
+                </label>
                 <input type="number" name="current_stock"
-                       class="border rounded w-full p-2"
+                       class="border rounded-lg w-full p-2 focus:ring-2 focus:ring-gray-900 focus:outline-none"
                        value="{{ old('current_stock',0) }}">
             </div>
 
-            <div class="mb-4">
-                <label>Minimum Stok</label>
+            {{-- Minimum Stok --}}
+            <div>
+                <label class="block mb-1 font-medium">
+                    Minimum Stok
+                </label>
                 <input type="number" name="min_stock"
-                       class="border rounded w-full p-2"
+                       class="border rounded-lg w-full p-2 focus:ring-2 focus:ring-gray-900 focus:outline-none"
                        value="{{ old('min_stock',5) }}">
             </div>
 
-            <button class="bg-green-600 text-white px-4 py-2 rounded">
-                Simpan
-            </button>
+            {{-- Actions --}}
+            <div class="flex items-center gap-3 pt-4">
 
-            <a href="{{ route('products.index') }}"
-               class="ml-2 text-gray-600">
-               Batal
-            </a>
+                <button class="bg-green-600 text-white px-5 py-2 rounded-lg
+                               hover:bg-green-700 transition">
+                    Simpan
+                </button>
+
+                <a href="{{ route('products.index') }}"
+                   class="text-gray-600 hover:text-black">
+                   Batal
+                </a>
+
+            </div>
 
         </form>
 
     </div>
-</x-app-layout>
+
+</div>
+
+@endsection

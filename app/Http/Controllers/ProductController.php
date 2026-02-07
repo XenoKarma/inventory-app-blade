@@ -7,9 +7,21 @@ use App\Models\ProductCategory;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
+use App\Models\Scopes\NotArchivedScope;
+
 
 class ProductController extends Controller
 {
+    public function archived()
+    {
+        $products = Product::withoutGlobalScope(NotArchivedScope::class)
+            ->where('is_archived', true)
+            ->with('category')
+            ->get();
+
+        return view('products.archived', compact('products'));
+    }
+
     public function index()
     {
         $products = Product::with('category')
@@ -133,4 +145,25 @@ class ProductController extends Controller
 
         return back()->with('success', $message);
     }
+    public function archive(Product $product)
+    {
+        $product->is_archived = true;
+        $product->save();
+
+        return back()->with('success', 'Produk diarsipkan');
+    }
+
+    public function restore($id)
+    {
+        $product = Product::withoutGlobalScope(
+            \App\Models\Scopes\NotArchivedScope::class
+        )->findOrFail($id);
+
+        $product->is_archived = false;
+        $product->save();
+
+        return back()->with('success', 'Produk direstore');
+    }
+
+
 }
