@@ -17,19 +17,46 @@ class ProductController extends Controller
         $products = Product::withoutGlobalScope(NotArchivedScope::class)
             ->where('is_archived', true)
             ->with('category')
-            ->get();
+            ->paginate(10);
 
         return view('products.archived', compact('products'));
     }
 
-    public function index()
-    {
-        $products = Product::with('category')
-            ->latest()
-            ->get();
 
-        return view('products.index', compact('products'));
+public function index()
+{
+    $perPage = request('per_page', 10);
+
+    $query = Product::with('category')
+        ->where('is_archived', 0);
+
+    // 🔍 search
+    if ($s = request('search')) {
+        $query->where(function ($q) use ($s) {
+            $q->where('name', 'like', "%$s%")
+              ->orWhere('sku', 'like', "%$s%");
+        });
     }
+
+    // 🧩 filter kategori
+    if ($cat = request('category')) {
+        $query->where('product_category_id', $cat);
+    }
+
+    // ⬆️⬇️ sort
+    $sort = request('sort', 'id');
+    $dir  = request('dir', 'desc');
+
+    $query->orderBy($sort, $dir);
+
+    $products = $query->paginate($perPage)->withQueryString();
+
+    $categories = ProductCategory::orderBy('name')->get();
+
+    return view('products.index', compact('products','categories'));
+}
+
+
 
     public function create()
     {
@@ -164,6 +191,61 @@ class ProductController extends Controller
 
         return back()->with('success', 'Produk direstore');
     }
+
+    public function bulkDelete(Request $request)
+    {
+        $ids = $request->ids ?? [];
+
+        if (empty($ids)) {
+            return back()->with('error','Tidak ada produk dipilih');
+        }
+
+        Product::whereIn('id', $ids)->delete();
+
+        return back()->with('success','Produk terpilih berhasil dihapus permanen');
+    }
+
+
+
+    public function destroy(Product $product)
+    {
+        $product->is_archived = true;
+        $product->save();
+
+        return back()->with('success', 'Produk berhasil dihapus (diarsipkan)');
+    }
+
+    // ini untuk edit product
+    public function edit(Product $product)
+    {
+        $categories = ProductCategory::all();
+
+        return view('products.edit', compact(
+            'product',
+            'categories'
+        ));
+    }
+
+    // hasil setelah edit product kita pakailah itu method update
+    public function update(Request $request, Product $product)
+    {
+        $data = $request->validate([
+            'name' => 'required',
+            'sku' => 'nullable|unique:products,sku,' . $product->id,
+            'product_category_id' => 'required',
+            'price' => 'required|numeric',
+            'current_stock' => 'required|integer',
+            'min_stock' => 'required|integer',
+        ]);
+
+        $product->update($data);
+
+        return redirect()
+            ->route('products.index')
+            ->with('success', 'Product berhasil diupdate');
+    }
+
+
 
 
 }
